@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Glassmorphism Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f172a, #1e1b4b, #311042);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* ตกแต่งพื้นหลังด้วยวงกลมเรืองแสง */
+        body::before, body::after {
+            content: '';
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #ff007f, #7f00ff);
+            filter: blur(80px);
+            z-index: 0;
+        }
+        body::before { top: -50px; left: -50px; }
+        body::after { bottom: -50px; right: -50px; opacity: 0.5; }
+
+        /* ตัวเครื่องคิดเลขสไตล์กระจกใส (Glassmorphism) */
+        .calculator {
+            position: relative;
+            z-index: 1;
+            width: 360px;
+            padding: 25px;
+            border-radius: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.3);
+        }
+
+        /* หน้าจอแสดงผล */
+        .display-container {
+            margin-bottom: 25px;
+        }
+
+        #display {
+            width: 100%;
+            height: 80px;
+            border: none;
+            outline: none;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            padding: 15px 20px;
+            font-size: 2.2rem;
+            color: #fff;
+            text-align: right;
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+
+        /* โครงสร้างปุ่มกด */
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        /* สไตล์ปุ่มทั่วไป */
+        button {
+            padding: 20px;
+            font-size: 1.4rem;
+            border: none;
+            outline: none;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        /* เอฟเฟกต์ตอนเลื่อนเมาส์และกดปุ่ม */
+        button:hover {
+            background: rgba(255, 255, 255, 0.18);
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        /* ปุ่มฟังก์ชันพิเศษ (Clear, Delete, Percent) */
+        .btn-func {
+            background: rgba(255, 165, 0, 0.15);
+            color: #ffa500;
+        }
+        .btn-func:hover {
+            background: rgba(255, 165, 0, 0.25);
+        }
+
+        /* ปุ่มเครื่องหมายทางคณิตศาสตร์ (+, -, *, /) */
+        .btn-operator {
+            background: rgba(0, 191, 255, 0.15);
+            color: #00bfff;
+        }
+        .btn-operator:hover {
+            background: rgba(0, 191, 255, 0.25);
+        }
+
+        /* ปุ่มเครื่องหมายเท่ากับ (=) */
+        .btn-equal {
+            grid-column: span 2;
+            background: linear-gradient(45deg, #ff007f, #7f00ff);
+            color: #fff;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(255, 0, 127, 0.4);
+        }
+        .btn-equal:hover {
+            background: linear-gradient(45deg, #ff1a8c, #8c1aff);
+            box-shadow: 0 6px 20px rgba(255, 0, 127, 0.6);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="calculator">
+        <div class="display-container">
+            <input type="text" id="display" placeholder="0" readonly>
+        </div>
+        <div class="buttons">
+            <!-- แถวที่ 1 -->
+            <button class="btn-func" onclick="clearDisplay()">C</button>
+            <button class="btn-func" onclick="deleteLast()">DE</button>
+            <button class="btn-func" onclick="appendValue('%')">%</button>
+            <button class="btn-operator" onclick="appendValue('/')">÷</button>
+            
+            <!-- แถวที่ 2 -->
+            <button onclick="appendValue('7')">7</button>
+            <button onclick="appendValue('8')">8</button>
+            <button onclick="appendValue('9')">9</button>
+            <button class="btn-operator" onclick="appendValue('*')">×</button>
+            
+            <!-- แถวที่ 3 -->
+            <button onclick="appendValue('4')">4</button>
+            <button onclick="appendValue('5')">5</button>
+            <button onclick="appendValue('6')">6</button>
+            <button class="btn-operator" onclick="appendValue('-')">-</button>
+            
+            <!-- แถวที่ 4 -->
+            <button onclick="appendValue('1')">1</button>
+            <button onclick="appendValue('2')">2</button>
+            <button onclick="appendValue('3')">3</button>
+            <button class="btn-operator" onclick="appendValue('+')">+</button>
+            
+            <!-- แถวที่ 5 -->
+            <button onclick="appendValue('0')">0</button>
+            <button onclick="appendValue('.')">.</button>
+            <button class="btn-equal" onclick="calculate()">=</button>
+        </div>
+    </div>
+
+    <script>
+        const display = document.getElementById('display');
+
+        // ฟังก์ชันสำหรับเพิ่มตัวเลขหรือเครื่องหมายลงหน้าจอ
+        function appendValue(value) {
+            if (display.value === 'Error') {
+                display.value = '';
+            }
+            display.value += value;
+        }
+
+        // ฟังก์ชันล้างหน้าจอทั้งหมด (C)
+        function clearDisplay() {
+            display.value = '';
+        }
+
+        // ฟังก์ชันลบตัวอักษรล่าสุด (DE)
+        function deleteLast() {
+            if (display.value === 'Error') {
+                display.value = '';
+            } else {
+                display.value = display.value.slice(0, -1);
+            }
+        }
+
+        // ฟังก์ชันคำนวณผลลัพธ์ (=)
+        function calculate() {
+            try {
+                // เปลี่ยนเครื่องหมายเพื่อให้สอดคล้องกับโครงสร้างคำนวณเปอร์เซ็นต์พื้นฐาน
+                let expression = display.value;
+                
+                // ตรวจสอบและประมวลผลคำนวณ
+                if (expression) {
+                    let result = eval(expression);
+                    // ป้องกันปัญหารศนิยมยาวเกินไป เช่น 0.1 + 0.2
+                    if (result % 1 !== 0) {
+                        result = parseFloat(result.toFixed(8));
+                    }
+                    display.value = result;
+                }
+            } catch (error) {
+                display.value = 'Error';
+            }
+        }
+
+        // รองรับการกดจากคีย์บอร์ด (Keyboard Support)
+        document.addEventListener('keydown', function(event) {
+            const key = event.key;
+            if ((key >= '0' && key <= '9') || key === '.' || key === '+' || key === '-' || key === '*' || key === '/' || key === '%') {
+                appendValue(key);
+            } else if (key === 'Enter') {
+                calculate();
+            } else if (key === 'Backspace') {
+                deleteLast();
+            } else if (key === 'Escape') {
+                clearDisplay();
+            }
+        });
+    </script>
+</body>
+</html>
